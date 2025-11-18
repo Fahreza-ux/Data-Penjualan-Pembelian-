@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales & Purchase Tool</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Sales & Purchase Tool</h1>
+
+<div class="form">
+  <input type="text" id="item" placeholder="Nama Barang">
+  <input type="number" id="price" placeholder="Harga">
+  <input type="number" id="quantity" placeholder="Jumlah">
+  <select id="type">
+    <option value="sale">Penjualan</option>
+    <option value="purchase">Pembelian</option>
+  </select>
+  <button type="button" onclick="addTransaction()">Tambah Transaksi</button>
+</div>
+
+<h2>Riwayat Transaksi</h2>
+<table id="transactionTable">
+  <thead>
+    <tr>
+      <th>Tanggal</th>
+      <th>Barang</th>
+      <th>Harga</th>
+      <th>Jumlah</th>
+      <th>Tipe</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>Summary</h2>
+<p>Total Penjualan: <span id="totalSale">0</span></p>
+<p>Total Pembelian: <span id="totalPurchase">0</span></p>
+<p>Laba/Rugi: <span id="profit">0</span></p>
+
+<div class="buttons">
+  <button type="button" onclick="exportCSV()">Export CSV</button>
+  <button type="button" onclick="clearData()" style="background-color:red; color:white;">Bersihkan Data</button>
+  <button type="button" onclick="resetAll()" style="background-color:orange; color:white;">Mulai Baru</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
