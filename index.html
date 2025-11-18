@@ -560,6 +560,8 @@
             document.getElementById('today-transactions').textContent = todayTransactions.length;
         }
         
+
+        
         // Fungsi untuk update summary
         function updateSummary() {
             const totalPenjualan = transactions
@@ -580,4 +582,124 @@
             labaRugiElement.className = labaRugi >= 0 ? 'profit' : 'loss';
         }
         
-        // Fungsi untuk hapus tran
+        // Fungsi untuk hapus transaksi
+        function deleteTransaction(index) {
+            showModal('Apakah Anda yakin ingin menghapus transaksi ini?', () => {
+                transactions.splice(index, 1);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                renderTransactionsTable();
+                renderTodayTransactions();
+                updateSummary();
+            });
+        }
+        
+        // Fungsi untuk hapus semua data
+        function clearAllData() {
+            showModal('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.', () => {
+                transactions = [];
+                localStorage.removeItem('transactions');
+                renderTransactionsTable();
+                renderTodayTransactions();
+                updateSummary();
+            });
+        }
+        
+        // Fungsi untuk export CSV
+        function exportToCSV() {
+            if (transactions.length === 0) {
+                alert('Tidak ada data untuk diekspor');
+                return;
+            }
+            
+            let csvContent = "Tanggal,Barang,Harga,Jumlah,Tipe,Total\n";
+            
+            transactions.forEach(transaction => {
+                const total = transaction.harga * transaction.jumlah;
+                csvContent += `${transaction.tanggal},${transaction.barang},${transaction.harga},${transaction.jumlah},${transaction.tipe},${total}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'transaksi.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Fungsi untuk show modal
+        function showModal(message, confirmCallback) {
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('confirm-modal').style.display = 'flex';
+            
+            document.getElementById('confirm-action').onclick = function() {
+                document.getElementById('confirm-modal').style.display = 'none';
+                confirmCallback();
+            };
+        }
+        
+        // Fungsi utilitas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        function formatDate(dateString) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+        
+        // Event listeners saat DOM loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigasi
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page') + '-page';
+                    switchPage(pageId);
+                });
+            });
+            
+            // Form transaksi
+            document.getElementById('transaction-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const transaction = {
+                    tipe: document.getElementById('transaction-type').value,
+                    barang: document.getElementById('product-name').value,
+                    harga: parseInt(document.getElementById('product-price').value),
+                    jumlah: parseInt(document.getElementById('product-quantity').value),
+                    tanggal: document.getElementById('transaction-date').value
+                };
+                
+                addTransaction(transaction);
+                this.reset();
+                alert('Transaksi berhasil ditambahkan!');
+                switchPage('penjualan-page');
+            });
+            
+            // Tombol export
+            document.getElementById('export-csv').addEventListener('click', exportToCSV);
+            
+            // Tombol hapus data
+            document.getElementById('clear-data').addEventListener('click', clearAllData);
+            
+            // Modal
+            document.querySelector('.close-modal').addEventListener('click', function() {
+                document.getElementById('confirm-modal').style.display = 'none';
+            });
+            
+            document.getElementById('cancel-action').addEventListener('click', function() {
+                document.getElementById('confirm-modal').style.display = 'none';
+            });
+            
+            // Inisialisasi
+            document.getElementById('transaction-date').valueAsDate = new Date());
+            renderTransactionsTable();
+            renderTodayTransactions();
+            updateSummary();
+        });
+        // === JAVASCRIPT SELESAI ===
+    </script>
+</body>
+</html>
