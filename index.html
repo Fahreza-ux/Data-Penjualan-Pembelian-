@@ -1,51 +1,588 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sales & Purchase Tool</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Purchase Tool</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4cb5f5;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 70px 1fr;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        header {
+            grid-area: header;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .logo span {
+            margin-left: 10px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            grid-area: sidebar;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-item:hover {
+            background-color: #f0f2f5;
+        }
+        
+        .nav-item.active {
+            background-color: #e9ecef;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* Main Content Styles */
+        main {
+            grid-area: main;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .page-title {
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Summary Styles */
+        .summary-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .profit {
+            color: var(--success-color);
+        }
+        
+        .loss {
+            color: var(--danger-color);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "header"
+                    "main";
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .summary-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>Sales & Purchase Tool</h1>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span>Sales & Purchase Tool</span>
+            </div>
+        </header>
+        
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="penjualan">
+                    <span>Penjualan</span>
+                </li>
+                <li class="nav-item" data-page="tambah-transaksi">
+                    <span>Tambah Transaksi</span>
+                </li>
+                <li class="nav-item" data-page="riwayat">
+                    <span>Riwayat Transaksi</span>
+                </li>
+                <li class="nav-item" data-page="summary">
+                    <span>Summary</span>
+                </li>
+            </ul>
+        </aside>
+        
+        <main>
+            <!-- Halaman Penjualan -->
+            <div id="penjualan-page" class="page active">
+                <h1 class="page-title">Penjualan</h1>
+                <div class="card">
+                    <h2>Transaksi Penjualan Hari Ini</h2>
+                    <div class="summary-container">
+                        <div class="summary-card">
+                            <h3>Total Penjualan Hari Ini</h3>
+                            <p id="today-sales">Rp 0</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Jumlah Transaksi</h3>
+                            <p id="today-transactions">0</p>
+                        </div>
+                    </div>
+                    <table id="today-transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Barang</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Tipe</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Halaman Tambah Transaksi -->
+            <div id="tambah-transaksi-page" class="page">
+                <h1 class="page-title">Tambah Transaksi</h1>
+                <div class="card">
+                    <form id="transaction-form">
+                        <div class="form-group">
+                            <label for="transaction-type">Tipe Transaksi</label>
+                            <select id="transaction-type" required>
+                                <option value="">Pilih Tipe</option>
+                                <option value="penjualan">Penjualan</option>
+                                <option value="pembelian">Pembelian</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-name">Nama Barang</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Harga</label>
+                            <input type="number" id="product-price" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-quantity">Jumlah</label>
+                            <input type="number" id="product-quantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction-date">Tanggal</label>
+                            <input type="date" id="transaction-date" required>
+                        </div>
+                        <button type="submit" class="btn-success">Simpan Transaksi</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Halaman Riwayat Transaksi -->
+            <div id="riwayat-page" class="page">
+                <h1 class="page-title">Riwayat Transaksi</h1>
+                <div class="card">
+                    <div class="action-buttons">
+                        <button id="export-csv" class="btn-success">Export CSV</button>
+                        <button id="clear-data" class="btn-danger">Hapus Data</button>
+                    </div>
+                    <table id="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Barang</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Tipe</th>
+                                <th>Total</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Halaman Summary -->
+            <div id="summary-page" class="page">
+                <h1 class="page-title">Summary</h1>
+                <div class="card">
+                    <div class="summary-container">
+                        <div class="summary-card">
+                            <h3>Total Penjualan</h3>
+                            <p id="total-penjualan">Rp 0</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Total Pembelian</h3>
+                            <p id="total-pembelian">Rp 0</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Laba/Rugi</h3>
+                            <p id="laba-rugi">Rp 0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal Konfirmasi -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Konfirmasi</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p id="modal-message">Apakah Anda yakin ingin menghapus semua data?</p>
+            <div class="action-buttons">
+                <button id="confirm-action" class="btn-danger">Ya, Hapus</button>
+                <button id="cancel-action" class="btn-warning">Batal</button>
+            </div>
+        </div>
+    </div>
 
-<div class="form">
-  <input type="text" id="item" placeholder="Nama Barang">
-  <input type="number" id="price" placeholder="Harga">
-  <input type="number" id="quantity" placeholder="Jumlah">
-  <select id="type">
-    <option value="sale">Penjualan</option>
-    <option value="purchase">Pembelian</option>
-  </select>
-  <button type="button" onclick="addTransaction()">Tambah Transaksi</button>
-</div>
-
-<h2>Riwayat Transaksi</h2>
-<table id="transactionTable">
-  <thead>
-    <tr>
-      <th>Tanggal</th>
-      <th>Barang</th>
-      <th>Harga</th>
-      <th>Jumlah</th>
-      <th>Tipe</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<h2>Summary</h2>
-<p>Total Penjualan: <span id="totalSale">0</span></p>
-<p>Total Pembelian: <span id="totalPurchase">0</span></p>
-<p>Laba/Rugi: <span id="profit">0</span></p>
-
-<div class="buttons">
-  <button type="button" onclick="exportCSV()">Export CSV</button>
-  <button type="button" onclick="clearData()" style="background-color:red; color:white;">Bersihkan Data</button>
-  <button type="button" onclick="resetAll()" style="background-color:orange; color:white;">Mulai Baru</button>
-</div>
-
-<script src="script.js"></script>
-</body>
-</html>
+    <script>
+        // Data transaksi (disimpan di localStorage)
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        
+        // Elemen DOM
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+        const transactionForm = document.getElementById('transaction-form');
+        const transactionsTable = document.getElementById('transactions-table');
+        const todayTransactionsTable = document.getElementById('today-transactions-table');
+        const exportCsvBtn = document.getElementById('export-csv');
+        const clearDataBtn = document.getElementById('clear-data');
+        const confirmModal = document.getElementById('confirm-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const cancelActionBtn = document.getElementById('cancel-action');
+        const confirmActionBtn = document.getElementById('confirm-action');
+        
+        // Fungsi untuk beralih halaman
+        function switchPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${pageId.replace('-page', '')}"]`).classList.add('active');
+            
+            // Perbarui data jika diperlukan
+            if (pageId === 'riwayat-page') {
+                renderTransactionsTable();
+            } else if (pageId === 'penjualan-page') {
+                renderTodayTransactions();
+            } else if (pageId === 'summary-page') {
+                updateSummary();
+            }
+        }
+        
+        // Fungsi untuk menambahkan transaksi
+        function addTransaction(transaction) {
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            renderTransactionsTable();
+            renderTodayTransactions();
+            updateSummary();
+        }
+        
+        // Fungsi untuk merender tabel transaksi
+        function renderTransactionsTable() {
+            const tbody = transactionsTable.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Tidak ada data transaksi</td></tr>';
+                return;
+            }
+            
+            transactions.forEach((transaction, index) => {
+                const row = document.createElement('tr');
+                const total = transaction.harga * transaction.jumlah;
+                
+                row.innerHTML = `
+                    <td>${formatDate(transaction.tanggal)}</td>
+                    <td>${transaction.barang}</td>
+                    <td>Rp ${formatNumber(transaction.harga)}</td>
+                    <td>${transaction.jumlah}</td>
+                    <td>${transaction.tipe === 'penjualan' ? 'Penjualan' : 'Pembelian'}</td>
+                    <td>Rp ${formatNumber(total)}</td>
+                    <td>
+                        <button class="btn-danger delete-btn" data-index="${index}">Hapus</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Tambahkan event listener untuk tombol hapus
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteTransaction(index);
+                });
+            });
+        }
+        
+        // Fungsi untuk merender transaksi hari ini
+        function renderTodayTransactions() {
+            const tbody = todayTransactionsTable.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = transactions.filter(t => t.tanggal === today && t.tipe === 'penjualan');
+            
+            if (todayTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Tidak ada transaksi penjualan hari ini</td></tr>';
+                document.getElementById('today-sales').textContent = 'Rp 0';
+                document.getElementById('today-transactions').textContent = '0';
+                return;
+            }
+            
+            let totalSales = 0;
+            
+            todayTransactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                const total = transaction.harga * transaction.jumlah;
+                totalSales += total;
+                
+                row.innerHTML = `
+                    <td>${formatDate(transaction.tanggal)}</td>
+                    <td>${transaction.barang}</td>
+                    <td>Rp ${formatNumber(transaction.harga)}</td>
+                    <td>${transaction.jumlah}</td>
+                    <td>Penjualan</td>
+                    <td>Rp ${formatNumber(total)}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('today-sales').textContent = `Rp ${formatNumber(totalSales)}`;
+            document.getElementById('today-transactions').textContent = todayTransactions.length;
+        }
+        
+        // Fungsi untuk memperbarui ringkasan
+        function updateSummary() {
+            const totalPenjualan = transactions
+                .filter(t => t.tipe === 'penjualan')
+                .reduce((sum, t) => sum + (t.harga * t.jumlah), 0);
+        
