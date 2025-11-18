@@ -93,16 +93,19 @@
             border-left: 4px solid var(--primary-color);
         }
         
-        .nav-item i {
-            margin-right: 10px;
-            color: var(--primary-color);
-        }
-        
         /* Main Content Styles */
         main {
             grid-area: main;
             padding: 20px;
             overflow-y: auto;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
         }
         
         .page-title {
@@ -475,15 +478,28 @@
         
         // Fungsi untuk beralih halaman
         function switchPage(pageId) {
+            console.log('Switching to page:', pageId);
+            
+            // Sembunyikan semua halaman
             pages.forEach(page => {
                 page.classList.remove('active');
             });
-            document.getElementById(pageId).classList.add('active');
             
+            // Tampilkan halaman yang dipilih
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update navigasi
             navItems.forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[data-page="${pageId.replace('-page', '')}"]`).classList.add('active');
+            
+            const activeNav = document.querySelector(`[data-page="${pageId.replace('-page', '')}"]`);
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
             
             // Perbarui data jika diperlukan
             if (pageId === 'riwayat-page') {
@@ -502,6 +518,7 @@
             renderTransactionsTable();
             renderTodayTransactions();
             updateSummary();
+            alert('Transaksi berhasil ditambahkan!');
         }
         
         // Fungsi untuk merender tabel transaksi
@@ -576,13 +593,4 @@
                 tbody.appendChild(row);
             });
             
-            document.getElementById('today-sales').textContent = `Rp ${formatNumber(totalSales)}`;
-            document.getElementById('today-transactions').textContent = todayTransactions.length;
-        }
-        
-        // Fungsi untuk memperbarui ringkasan
-        function updateSummary() {
-            const totalPenjualan = transactions
-                .filter(t => t.tipe === 'penjualan')
-                .reduce((sum, t) => sum + (t.harga * t.jumlah), 0);
-        
+           
